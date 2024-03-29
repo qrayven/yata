@@ -1,6 +1,6 @@
 use super::{Error, Sequence};
 
-use std::fmt;
+use std::{clone, fmt};
 
 type BoxedFnMethod<'a, M> = Box<dyn FnMut(<M as Method<'a>>::Input) -> <M as Method<'a>>::Output>;
 
@@ -62,10 +62,10 @@ type BoxedFnMethod<'a, M> = Box<dyn FnMut(<M as Method<'a>>::Input) -> <M as Met
 ///
 /// # Be advised
 /// There is no `reset` method on the trait. If you need reset a state of the `Method` instance, you should just create a new one.
-pub trait Method<'a>: fmt::Debug {
+pub trait Method<'a>: fmt::Debug + Send + Sync {
 	/// Method parameters
 	type Params;
-	/// Input value type
+	/// Input value tye
 	type Input;
 	/// Output value type
 	type Output;
@@ -79,7 +79,10 @@ pub trait Method<'a>: fmt::Debug {
 	fn next(&mut self, value: Self::Input) -> Self::Output;
 
 	/// Returns a name of the method
-	fn name(&self) -> &str {
+	fn name(&self) -> &str
+	where
+		Self: Sized,
+	{
 		let parts = std::any::type_name::<Self>().split("::");
 		parts.last().unwrap_or_default()
 	}
@@ -121,8 +124,8 @@ pub trait Method<'a>: fmt::Debug {
 	#[inline]
 	fn over<S>(&'a mut self, inputs: S) -> Vec<Self::Output>
 	where
-		S: Sequence<Self::Input>,
 		Self: Sized,
+		S: Sequence<Self::Input>,
 	{
 		inputs.call(self)
 	}

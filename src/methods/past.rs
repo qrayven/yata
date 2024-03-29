@@ -57,11 +57,11 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Past<T>(Window<T>)
 where
-	T: Copy + fmt::Debug;
+	T: Copy + fmt::Debug + Send;
 
 impl<'a, T> Method<'a> for Past<T>
 where
-	T: Copy + fmt::Debug,
+	T: Copy + fmt::Debug + Send + Sync,
 {
 	type Params = PeriodType;
 	type Input = T;

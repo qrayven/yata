@@ -62,7 +62,7 @@ pub struct AverageDirectionalIndex {
 
 impl IndicatorConfig for AverageDirectionalIndex {
 	type Instance = AverageDirectionalIndexInstance;
-
+	// this is cool the const inside of the impl
 	const NAME: &'static str = "AverageDirectionalIndex";
 
 	fn init<T: OHLCV>(self, candle: &T) -> Result<Self::Instance, Error> {
@@ -155,6 +155,7 @@ impl Default for AverageDirectionalIndex {
 pub struct AverageDirectionalIndexInstance {
 	cfg: AverageDirectionalIndex,
 
+	// tr_ma2: crate::methods::TR
 	window: Window<HLC>,
 	prev_close: ValueType,
 	tr_ma: RegularMethod,
